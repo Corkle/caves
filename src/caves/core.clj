@@ -97,7 +97,7 @@
 (defn get-input [game screen]
     (assoc game :input (s/get-key-blocking screen)))
 
-
+; Loop on game ui stack
 (defn run-game [game screen]
     (loop [{:keys [input uis] :as game} game]
         (when-not (empty? uis)

@@ -23,11 +23,11 @@
 
 
 
-(defn print-row [row]
-    (println (apply str (map :glyph row))))
+; (defn print-row [row]
+;     (println (apply str (map :glyph row))))
 
-(defn print-world [world]
-    (dorun (map print-row (:tiles world))))
+; (defn print-world [world]
+;     (dorun (map print-row (:tiles world))))
 
 
 
@@ -68,5 +68,5 @@
 ; Actual World Creation
 (defn random-world []
     (let [world (new World (random-tiles))
-          world (nth (iterate smooth-world world) 10)]
+          world (nth (iterate smooth-world world) 0)]
      world))
