@@ -1,18 +1,32 @@
 (ns caves.world)
 
+; Constants --------------------------------------------------------------
 (def world-size [160 50])
 
+; Data Structs -----------------------------------------------------------
 (defrecord World [tiles])
 (defrecord Tile [kind glyph color])
 
 (def tiles
-    {:floor (new Tile :floor "." :white)
-     :wall  (new Tile :wall  "#" :white)
-     :bound (new Tile :bound "X" :black)})
+    {:floor (->Tile :floor "." :white)
+     :wall  (->Tile :wall  "#" :white)
+     :bound (->Tile :bound "X" :black)})
 
-(defn get-tile [tiles x y]
+; Helper Functions -------------------------------------------------------
+(defn get-tile-from-tiles [tiles [x y]]
     (get-in tiles [y x] (:bound tiles)))
 
+(defn random-coordinate []
+  (let [[cols rows] world-size]
+    [(rand-int cols) (rand-int rows)]))
+
+(defn find-empty-tile [world]
+  (loop [coord (random-coordinate)]
+    (if (#{:floor} (get-tile-kind world coord))
+      coord
+      (recur (random-coordinate)))))
+
+; World Generation -------------------------------------------------------
 (defn random-tiles []
     (let [[cols rows] world-size]
         (letfn [(random-tile []
@@ -20,16 +34,6 @@
                 (random-row []
                     (vec (repeatedly cols random-tile)))]
         (vec (repeatedly rows random-row)))))
-
-
-
-; (defn print-row [row]
-;     (println (apply str (map :glyph row))))
-
-; (defn print-world [world]
-;     (dorun (map print-row (:tiles world))))
-
-
 
 (defn get-smoothed-tile [block]
     (let [tile-counts (frequencies (map :kind block))
@@ -46,8 +50,7 @@
       [(+ x dx) (+ y dy)]))
 
 (defn get-block [tiles x y]
-    (map (fn [[x y]]
-        (get-tile tiles x y))
+    (map (partial get-tile-from-tiles tiles)
       (block-coords x y)))
 
 (defn get-smoothed-row [tiles y]
@@ -64,9 +67,8 @@
     (assoc world :tiles (get-smoothed-tiles tiles)))
 
 
-
-; Actual World Creation
+; Actual World Creation --------------------------------------------------
 (defn random-world []
-    (let [world (new World (random-tiles))
-          world (nth (iterate smooth-world world) 0)]
+    (let [world (->World (random-tiles))
+          world (nth (iterate smooth-world world) 3)]
      world))

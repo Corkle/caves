@@ -8,7 +8,7 @@
   (:kind (last (:uis game))))
 
 (deftest test-start
-  (let [game (new Game nil [(new UI :start)] nil)]
+  (let [game (->Game nil [(->UI :start)] nil)]
   
     (testing "Any key will continue to play screen."
       (let [results (map (partial process-input game) [\f \space :escape :enter :backspace])]
@@ -16,7 +16,7 @@
           (is (= (current-ui result) :play)))))))
 
 (deftest test-play
-  (let [game (new Game nil [(new UI :play)] nil)]
+  (let [game (->Game nil [(->UI :play)] nil)]
   
     (testing "Enter key wins at the play screen."
       (let [result (process-input game :enter)]
