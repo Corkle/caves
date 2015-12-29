@@ -4,7 +4,7 @@
 (def world-size [160 50])
 
 ; Data Structs -----------------------------------------------------------
-(defrecord World [tiles])
+(defrecord World [tiles entities])
 (defrecord Tile [kind glyph color])
 
 (def tiles
@@ -20,11 +20,24 @@
   (let [[cols rows] world-size]
     [(rand-int cols) (rand-int rows)]))
 
+; Query World Functions --------------------------------------------------
+(defn get-tile [world coord]
+  (get-tile-from-tiles (:tiles world) coord))
+
+(defn get-tile-kind [world coord]
+  (:kind (get-tile world coord)))
+
 (defn find-empty-tile [world]
   (loop [coord (random-coordinate)]
     (if (#{:floor} (get-tile-kind world coord))
       coord
       (recur (random-coordinate)))))
+
+(defn set-tile [world [x y] tile]
+  (assoc-in world [:tiles y x] tile))
+
+(defn set-tile-floor [world coord]
+  (set-tile world coord (:floor tiles)))
 
 ; World Generation -------------------------------------------------------
 (defn random-tiles []
@@ -69,6 +82,6 @@
 
 ; Actual World Creation --------------------------------------------------
 (defn random-world []
-    (let [world (->World (random-tiles))
+    (let [world (->World (random-tiles) {})
           world (nth (iterate smooth-world world) 3)]
      world))

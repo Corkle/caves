@@ -17,8 +17,7 @@
 
 
 (defn new-game []
-    (assoc (->Game nil [(->UI :start)] nil)
-        :location[40 20]))
+    (->Game nil [(->UI :start)] nil))
 
 
 (defn main
